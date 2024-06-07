@@ -1,7 +1,7 @@
-# Additional System Properties from system/build.prop
-
+####### generate by lopestom #######
 ro.adb.secure=0
 ro.debuggable=1
 ro.vendor.qti.va_aosp.support=1
 persist.fuse_sdcard=true
 persist.sys.fuse.passthrough.enable=true
+####### generate by lopestom #######

@@ -1,0 +1,31 @@
+# Standard AOSP partitions
+/boot             emmc     /dev/block/by-name/boot                flags=slotselect
+/vendor_boot      emmc     /dev/block/by-name/vendor_boot         flags=slotselect;flashimg
+/dtbo             emmc     /dev/block/by-name/dtbo                flags=slotselect
+/vbmeta           emmc     /dev/block/by-name/vbmeta              flags=slotselect;flashimg
+
+# Needed for time
+/persist          ext4     /dev/block/by-name/persist
+
+# Backup
+/persist_image    emmc     /dev/block/by-name/persist             flags=backup
+/cust             ext4     /dev/block/bootdevice/by-name/cust     flags=display="Cust";backup=1
+/cust             emmc     /dev/block/bootdevice/by-name/cust     flags=display="Cust_image";backup=1;flashimg=1
+
+#
+/cache            ext4     /dev/block/by-name/rescue              flags=display=cache
+/firmware_mnt     emmc     /dev/block/by-name/modem               flags=display="Modem";backup=1;flashimg=1;slotselect
+/dsp_firmware     emmc     /dev/block/by-name/dsp                 flags=backup=1;subpartitionof=/modem;slotselect
+/bt_firmware      emmc     /dev/block/bootdevice/by-name/bluetooth      flags=backup=1;subpartitionof=/modem;slotselect
+
+#/firmware_mnt     vfat     /dev/block/by-name/modem
+#/dsp_firmware     vfat     /dev/block/by-name/dsp
+#/bt_firmware      vfat     /dev/block/bootdevice/by-name/bluetooth               
+
+
+# Removable storage
+/external_sd      auto    /dev/block/mmcblk1p1
+# Note: if your disk connected through OTG have multiple partitions then
+# only 1st partition is mounted for convenience
+# if you want to mount all partitions then replace sdg1 with sdg*, but it is somewhat errorprone
+/usb-otg          auto    /dev/block/sdg1                         flags=storage;removable;wipeingui

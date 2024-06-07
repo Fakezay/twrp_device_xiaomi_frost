@@ -1,0 +1,98 @@
+name: Building TWRP
+
+on:
+#  release:
+#    types: [published]
+#  push:
+#    branches:
+#      - master
+#    paths:
+#      - '.config'
+#  schedule:
+#    - cron: 0 8 * * 5
+  workflow_dispatch:
+
+env:
+  MANIFEST: https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp -b twrp-12.1
+  DEVICE: frost
+  DT_LINK: https://github.com/lopestom/twrp_device_xiaomi_frost
+  DT_PATH: device/xiaomi/frost
+  TARGET: bootimage
+  TZ: Asia/manila
+#  DT_BRANCH: WIP
+
+jobs:
+  build:
+    if: github.event.repository.owner.id == github.event.sender.id
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@master
+
+    # You might want to Checkout your repo first, but not mandatory
+    - name: Check Out
+      uses: actions/checkout@v4
+    # Cleanup The Actions Workspace Using Custom Composite Run Actions
+    - name: Cleanup
+      uses: rokibhasansagar/slimhub_actions@main
+      # That's it! Now use your normal steps
+
+    - name: Prepare the environment
+      run: |
+       sudo apt update
+       sudo apt -y upgrade
+       sudo apt -y install gperf gcc-multilib gcc-10-multilib g++-multilib g++-10-multilib libc6-dev lib32ncurses5-dev x11proto-core-dev libx11-dev tree lib32z-dev libgl1-mesa-dev libxml2-utils xsltproc bc ccache lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libwxgtk3.0-gtk3-dev libxml2 lzop pngcrush schedtool squashfs-tools imagemagick libbz2-dev lzma ncftp qemu-user-static libstdc++-10-dev libncurses5 python3
+       git config --global user.name "lopestom"
+       git config --global user.email "guillopes2002@gmail.com"
+        
+    - name: Install OpenJDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '8'
+ 
+    - name: Install repo
+      run: |
+        mkdir ~/bin
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod a+x ~/bin/repo
+        sudo ln -sf ~/bin/repo /usr/bin/repo
+
+    - name: Sync recovery source and device tree
+      run: |
+       PATH=~/bin:$PATH
+       mkdir twrp
+       cd twrp
+       repo init -u $MANIFEST --depth=1
+       repo sync -c -j8 --force-sync --no-clone-bundle --no-tags
+       rm -rf .repo
+             
+    - name: Checkout device tree
+      uses: actions/checkout@v4
+      with:
+       path: twrp/device/xiaomi/frost
+
+    - name: Set Swap Space
+      uses: pierotofy/set-swap-space@master
+      with:
+       swap-size-gb: 12
+
+    - name: Build
+      run: |
+       PATH=~/bin:$PATH
+       cd twrp
+       export ALLOW_MISSING_DEPENDENCIES=true && source build/envsetup.sh && lunch twrp_frost-eng && mka $TARGET -j$(nproc --all)
+       cp  out/target/product/frost/boot.img    out/target/product/frost/boot-frost-A11-$(date +"%Y%m%d").img  
+             
+    - name: Release recovery image
+      uses: softprops/action-gh-release@v2
+      env:
+       GITHUB_TOKEN: ${{ secrets.TEST }}
+      with:
+       tag_name: Poco_C40-frost
+       name: TWRP37x_A11
+       files: | 
+         twrp/out/target/product/frost/*boot*.img

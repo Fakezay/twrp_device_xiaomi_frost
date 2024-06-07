@@ -1,0 +1,16 @@
+/vendor/lib/modules/5.4-gki/clk-dummy.ko:
+/vendor/lib/modules/5.4-gki/mve_base.ko: /vendor/lib/modules/5.4-gki/mve_resource.ko
+/vendor/lib/modules/5.4-gki/vipcore.ko:
+/vendor/lib/modules/5.4-gki/jlq-i2s.ko:
+/vendor/lib/modules/5.4-gki/mve_resource.ko:
+/vendor/lib/modules/5.4-gki/jlq_cam_thermal.ko:
+/vendor/lib/modules/5.4-gki/camera.ko:
+/vendor/lib/modules/5.4-gki/rmnet_ctl.ko:
+/vendor/lib/modules/5.4-gki/mali_kbase_dlkm.ko:
+/vendor/lib/modules/5.4-gki/qca_cld3_wlan.ko:
+/vendor/lib/modules/5.4-gki/fde-jlq.ko:
+/vendor/lib/modules/5.4-gki/jlq_ion_heaps.ko:
+/vendor/lib/modules/5.4-gki/rmnet_offload.ko: /vendor/lib/modules/5.4-gki/rmnet_core.ko /vendor/lib/modules/5.4-gki/rmnet_ctl.ko
+/vendor/lib/modules/5.4-gki/rmnet_core.ko: /vendor/lib/modules/5.4-gki/rmnet_ctl.ko
+/vendor/lib/modules/5.4-gki/bfq.ko:
+/vendor/lib/modules/5.4-gki/rmnet_shs.ko: /vendor/lib/modules/5.4-gki/rmnet_core.ko /vendor/lib/modules/5.4-gki/rmnet_ctl.ko

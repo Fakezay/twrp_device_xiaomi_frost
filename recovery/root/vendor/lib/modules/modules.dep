@@ -1,0 +1,13 @@
+/vendor/lib/modules/mve_base.ko: /vendor/lib/modules/mve_resource.ko
+/vendor/lib/modules/vipcore.ko:
+/vendor/lib/modules/jlq-i2s.ko:
+/vendor/lib/modules/mve_resource.ko:
+/vendor/lib/modules/jlq_cam_thermal.ko:
+/vendor/lib/modules/camera.ko:
+/vendor/lib/modules/rmnet_ctl.ko:
+/vendor/lib/modules/mali_kbase_dlkm.ko:
+/vendor/lib/modules/qca_cld3_wlan.ko:
+/vendor/lib/modules/jlq_ion_heaps.ko:
+/vendor/lib/modules/rmnet_offload.ko: /vendor/lib/modules/rmnet_core.ko /vendor/lib/modules/rmnet_ctl.ko
+/vendor/lib/modules/rmnet_core.ko: /vendor/lib/modules/rmnet_ctl.ko
+/vendor/lib/modules/rmnet_shs.ko: /vendor/lib/modules/rmnet_core.ko /vendor/lib/modules/rmnet_ctl.ko

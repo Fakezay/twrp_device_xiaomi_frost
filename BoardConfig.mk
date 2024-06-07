@@ -1,3 +1,6 @@
+# For building with minimal manifest
+ALLOW_MISSING_DEPENDENCIES := true
+
 # Platform
 TARGET_BOARD_PLATFORM := jr510
 #TARGET_BOARD_PLATFORM := bengal
@@ -27,6 +30,7 @@ AB_OTA_PARTITIONS += system system_ext product vbmeta_system
 BOARD_BOOT_HEADER_VERSION := 3
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
+
 BOARD_BOOTIMAGE_PARTITION_SIZE := 100663296
 BOARD_AVB_ENABLE := true
 
@@ -40,6 +44,8 @@ BOARD_USES_METADATA_PARTITION := true
 # Workaround for error copying vendor files to recovery ramdisk
 TARGET_COPY_OUT_VENDOR := vendor
 
+BOARD_ROOT_EXTRA_FOLDERS := cust
+
 # Adjusted flags for decryption
 PLATFORM_SECURITY_PATCH := 2099-12-31
 VENDOR_SECURITY_PATCH := 2099-12-31
@@ -52,9 +58,13 @@ TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 # Fix for copying *.ko
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 
+# Properties
+TARGET_SYSTEM_PROP := $(DEVICE_PATH)/properties/system.prop
 
 ##### TWRP Flags #####
-TW_THEME := portrait_hdpi
+TW_HAS_EDL_MODE := true
+TW_BACKUP_EXCLUSIONS := /data/fonts
+TW_DEFAULT_LANGUAGE := ru
 
 # Include more languages than English
 TW_EXTRA_LANGUAGES := true
@@ -77,6 +87,9 @@ TW_USE_LEGACY_BATTERY_SERVICES := true
 # Time
 TARGET_RECOVERY_QCOM_RTC_FIX := true
 
+# Display
+TARGET_SCREEN_DENSITY := 320
+TW_THEME := portrait_hdpi
 # Statusbar icons flags
 TW_STATUS_ICONS_ALIGN := center
 TW_CUSTOM_CLOCK_POS := 610

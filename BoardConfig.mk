@@ -32,6 +32,8 @@ BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
 
 BOARD_BOOTIMAGE_PARTITION_SIZE := 100663296
+BOARD_RAMDISK_USE_LZ4 := true
+
 BOARD_AVB_ENABLE := true
 
 # includes make_f2fs to support userdata partition in f2fs

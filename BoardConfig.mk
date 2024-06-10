@@ -71,6 +71,9 @@ TW_DEFAULT_LANGUAGE := ru
 # Include more languages than English
 TW_EXTRA_LANGUAGES := true
 
+# Version
+TW_DEVICE_VERSION := frost_V13.0.13 - lopestom
+
 # Brightness
 TW_BRIGHTNESS_PATH := /sys/class/backlight/panel0-backlight/brightness
 TW_DEFAULT_BRIGHTNESS := 1800

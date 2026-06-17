@@ -47,6 +47,18 @@ BOARD_AVB_RECOVERY_ALGORITHM := SHA256_RSA4096
 BOARD_AVB_RECOVERY_ROLLBACK_INDEX := 1
 BOARD_AVB_RECOVERY_ROLLBACK_INDEX_LOCATION := 1
 
+
+# Força a inclusão do ramdisk do TWRP no vendor_boot
+BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
+BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
+
+# Verifica se o tamanho da partição está correto (o seu original tem 101MB, então use algo próximo)
+# 101MB em bytes é aproximadamente 105906176
+BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 105906176
+
+
+
+
 # includes make_f2fs to support userdata partition in f2fs
 TARGET_USERIMAGES_USE_F2FS := true
 

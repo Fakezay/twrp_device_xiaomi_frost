@@ -22,17 +22,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@master
 
-    - name: Check Out
-      uses: actions/checkout@v4
-
     - name: Cleanup
       uses: rokibhasansagar/slimhub_actions@main
 
     - name: Prepare the environment
       run: |
-       sudo apt update
-       sudo apt -y upgrade
-       sudo apt install -y gperf gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses-dev x11proto-core-dev libx11-dev tree lib32z-dev libgl1-mesa-dev libxml2-utils xsltproc bc ccache lib32readline-dev lib32z1-dev liblz4-tool libncurses-dev libsdl1.2-dev libwxgtk3.2-dev libxml2 lzop pngcrush schedtool squashfs-tools imagemagick libbz2-dev lzma ncftp qemu-user-static libstdc++-12-dev libncurses6 python3
+       sudo apt update && sudo apt install -y gperf gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses-dev x11proto-core-dev libx11-dev tree lib32z-dev libgl1-mesa-dev libxml2-utils xsltproc bc ccache lib32readline-dev lib32z1-dev liblz4-tool libncurses-dev libsdl1.2-dev libwxgtk3.2-dev libxml2 lzop pngcrush schedtool squashfs-tools imagemagick libbz2-dev lzma ncftp qemu-user-static libstdc++-12-dev libncurses6 python3
        git config --global user.name "fakezay"
        git config --global user.email "fakezaydev@gmail.com"
         
@@ -44,7 +39,7 @@ jobs:
  
     - name: Install repo
       run: |
-        mkdir ~/bin
+        mkdir -p ~/bin
         curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
         chmod a+x ~/bin/repo
         sudo ln -sf ~/bin/repo /usr/bin/repo
@@ -52,8 +47,7 @@ jobs:
     - name: Sync recovery source and device tree
       run: |
        PATH=~/bin:$PATH
-       mkdir twrp
-       cd twrp
+       mkdir twrp && cd twrp
        repo init -u $MANIFEST --depth=1
        repo sync -c -j8 --force-sync --no-clone-bundle --no-tags
        rm -rf .repo
@@ -72,8 +66,15 @@ jobs:
       run: |
        PATH=~/bin:$PATH
        cd twrp
-       export ALLOW_MISSING_DEPENDENCIES=true && source build/envsetup.sh && lunch twrp_frost-eng && mka $TARGET -j$(nproc --all)
-       cp  out/target/product/frost/vendor_boot.img    out/target/product/frost/vendor_boot-frost-A11-$(date +"%Y%m%d").img  
+       # Limpeza forçada dos objetos de vendor_boot para evitar cache de arquivo vazio
+       rm -rf out/target/product/frost/obj/PACKAGING/vendor-boot_intermediates/
+       rm -f out/target/product/frost/vendor_boot.img
+       # Build com flags forçadas de inclusão de ramdisk
+       export ALLOW_MISSING_DEPENDENCIES=true 
+       source build/envsetup.sh 
+       lunch twrp_frost-eng 
+       mka $TARGET BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT=true -j$(nproc --all)
+       cp out/target/product/frost/vendor_boot.img out/target/product/frost/vendor_boot-frost-A11-$(date +"%Y%m%d").img  
              
     - name: Release recovery image
       uses: softprops/action-gh-release@v2

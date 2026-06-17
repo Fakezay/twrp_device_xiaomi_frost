@@ -64,7 +64,14 @@ PLATFORM_SECURITY_PATCH := 2099-12-31
 VENDOR_SECURITY_PATCH := 2099-12-31
 PLATFORM_VERSION := 99.87.36
 PLATFORM_VERSION_LAST_STABLE := $(PLATFORM_VERSION)
-BOARD_PREBUILT_DTBIMAGE := $(DEVICE_PATH)/prebuilt/dtb
+
+# Define o caminho do DTB (certifique-se de que o nome do arquivo seja exatamente 'dtb')
+TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb
+
+# Força o sistema a injetar o DTB na imagem
+BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
+
+
 
 # Recovery
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888

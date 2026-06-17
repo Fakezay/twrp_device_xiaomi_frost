@@ -34,7 +34,17 @@ TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
 BOARD_BOOTIMAGE_PARTITION_SIZE := 100663296
 BOARD_RAMDISK_USE_LZ4 := true
 
-BOARD_AVB_ENABLE := true
+# Desativar Android Verified Boot (AVB)
+BOARD_AVB_ENABLE := false
+BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
+
+# Configurar chaves de teste para que o bootloader aceite a imagem
+BOARD_AVB_RECOVERY_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
+BOARD_AVB_RECOVERY_ALGORITHM := SHA256_RSA4096
+BOARD_AVB_RECOVERY_ROLLBACK_INDEX := 1
+BOARD_AVB_RECOVERY_ROLLBACK_INDEX_LOCATION := 1
+BOARD_KERNEL_PAGESIZE := 4096
+
 
 # includes make_f2fs to support userdata partition in f2fs
 TARGET_USERIMAGES_USE_F2FS := true

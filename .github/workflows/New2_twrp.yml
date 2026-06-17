@@ -73,7 +73,7 @@ jobs:
        export ALLOW_MISSING_DEPENDENCIES=true 
        source build/envsetup.sh 
        lunch twrp_frost-eng 
-       mka $TARGET BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT=true -j$(nproc --all)
+       mka recoveryimage vendorbootimage -j$(nproc --all)
        cp out/target/product/frost/vendor_boot.img out/target/product/frost/vendor_boot-frost-A11-$(date +"%Y%m%d").img  
              
     - name: Release recovery image

@@ -48,13 +48,16 @@ BOARD_AVB_RECOVERY_ROLLBACK_INDEX := 1
 BOARD_AVB_RECOVERY_ROLLBACK_INDEX_LOCATION := 1
 
 
-# Força a inclusão do ramdisk do TWRP no vendor_boot
-BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
+# Forçar inclusão do ramdisk do TWRP
 BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
+BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
 
-# Verifica se o tamanho da partição está correto (o seu original tem 101MB, então use algo próximo)
-# 101MB em bytes é aproximadamente 105906176
+# Tamanho exato da partição (101MB) - importante não deixar vazio
 BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 105906176
+
+# Isso força o build a não descartar o ramdisk
+BOARD_BUILD_VENDOR_BOOT_IMAGE := true
+
 
 
 

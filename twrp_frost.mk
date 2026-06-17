@@ -6,7 +6,7 @@ $(call inherit-product, vendor/twrp/config/common.mk)
 
 # Device identifier. This must come after all inclusions
 PRODUCT_DEVICE := frost
-PRODUCT_NAME := twrp_$(PRODUCT_DEVICE)
+PRODUCT_NAME := twrp_frost
 PRODUCT_BRAND := Redmi
 PRODUCT_MODEL := frost
 PRODUCT_MANUFACTURER := Xiaomi

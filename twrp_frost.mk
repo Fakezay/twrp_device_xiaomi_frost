@@ -15,7 +15,7 @@ PRODUCT_MANUFACTURER := Xiaomi
 DEVICE_PATH := device/xiaomi/frost
 
 # Inherit from device
-$(call inherit-product, $(DEVICE_PATH)/device.mk)
+#$(call inherit-product, $(DEVICE_PATH)/device.mk)
 
 PRODUCT_GMS_CLIENTID_BASE := android-xiaomi
 

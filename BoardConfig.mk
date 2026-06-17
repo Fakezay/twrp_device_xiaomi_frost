@@ -3,7 +3,6 @@ ALLOW_MISSING_DEPENDENCIES := true
 
 # Platform
 TARGET_BOARD_PLATFORM := jr510
-#TARGET_BOARD_PLATFORM := bengal
 
 # Bootloader
 TARGET_BOOTLOADER_BOARD_NAME := $(PRODUCT_DEVICE)
@@ -22,9 +21,12 @@ TARGET_2ND_CPU_VARIANT := generic
 
 # A/B device flags
 TARGET_NO_RECOVERY := true
-BOARD_USES_RECOVERY_AS_BOOT := true
 AB_OTA_UPDATER := true
-AB_OTA_PARTITIONS += system system_ext product vbmeta_system
+AB_OTA_PARTITIONS += system system_ext product vbmeta_system boot vendor_boot
+
+# Configuração Vendor Boot (OBRIGATÓRIA PARA HEADER V3 E RAMDISK 0)
+BOARD_USES_VENDOR_BOOT := true
+BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
 
 # bootimg configuration
 BOARD_BOOT_HEADER_VERSION := 3
@@ -33,6 +35,7 @@ TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
 
 BOARD_BOOTIMAGE_PARTITION_SIZE := 100663296
 BOARD_RAMDISK_USE_LZ4 := true
+BOARD_KERNEL_PAGESIZE := 4096
 
 # Desativar Android Verified Boot (AVB)
 BOARD_AVB_ENABLE := false
@@ -43,8 +46,6 @@ BOARD_AVB_RECOVERY_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
 BOARD_AVB_RECOVERY_ALGORITHM := SHA256_RSA4096
 BOARD_AVB_RECOVERY_ROLLBACK_INDEX := 1
 BOARD_AVB_RECOVERY_ROLLBACK_INDEX_LOCATION := 1
-BOARD_KERNEL_PAGESIZE := 4096
-
 
 # includes make_f2fs to support userdata partition in f2fs
 TARGET_USERIMAGES_USE_F2FS := true
@@ -82,7 +83,7 @@ TW_DEFAULT_LANGUAGE := ru
 TW_EXTRA_LANGUAGES := true
 
 # Version
-TW_DEVICE_VERSION := frost_V13.0.13 - lopestom
+TW_DEVICE_VERSION := frost_V13.0.25 - Weslley
 
 # Brightness
 TW_BRIGHTNESS_PATH := /sys/class/backlight/panel0-backlight/brightness
@@ -108,8 +109,6 @@ TW_THEME := portrait_hdpi
 # Statusbar icons flags
 TW_STATUS_ICONS_ALIGN := center
 TW_CUSTOM_CLOCK_POS := 610
-#TW_CUSTOM_CPU_POS := 50
-#TW_CUSTOM_BATTERY_POS := 290
 
 # Use our own USB config
 TW_EXCLUDE_DEFAULT_USB_INIT := true

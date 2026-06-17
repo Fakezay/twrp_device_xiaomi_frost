@@ -27,6 +27,7 @@ AB_OTA_PARTITIONS += system system_ext product vbmeta_system boot vendor_boot
 # Configuração Vendor Boot (OBRIGATÓRIA PARA HEADER V3 E RAMDISK 0)
 BOARD_USES_VENDOR_BOOT := true
 BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
+BOARD_VENDOR_RAMDISK_RECOVERY_EXCLUDE_RECOVERY_FROM_BOOT := true
 
 # bootimg configuration
 BOARD_BOOT_HEADER_VERSION := 3

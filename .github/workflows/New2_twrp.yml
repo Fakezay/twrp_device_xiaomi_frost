@@ -1,15 +1,6 @@
 name: Building TWRP
 
 on:
-#  release:
-#    types: [published]
-#  push:
-#    branches:
-#      - master
-#    paths:
-#      - '.config'
-#  schedule:
-#    - cron: 0 8 * * 5
   workflow_dispatch:
 
 env:
@@ -17,9 +8,8 @@ env:
   DEVICE: frost
   DT_LINK: https://github.com/fakezay/twrp_device_xiaomi_frost
   DT_PATH: device/xiaomi/frost
-  TARGET: bootimage
+  TARGET: vendorbootimage
   TZ: America/Sao_Paulo
-#  DT_BRANCH: WIP
 
 jobs:
   build:
@@ -32,13 +22,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@master
 
-    # You might want to Checkout your repo first, but not mandatory
     - name: Check Out
       uses: actions/checkout@v4
-    # Cleanup The Actions Workspace Using Custom Composite Run Actions
+
     - name: Cleanup
       uses: rokibhasansagar/slimhub_actions@main
-      # That's it! Now use your normal steps
 
     - name: Prepare the environment
       run: |
@@ -85,7 +73,7 @@ jobs:
        PATH=~/bin:$PATH
        cd twrp
        export ALLOW_MISSING_DEPENDENCIES=true && source build/envsetup.sh && lunch twrp_frost-eng && mka $TARGET -j$(nproc --all)
-       cp  out/target/product/frost/boot.img    out/target/product/frost/boot-frost-A11-$(date +"%Y%m%d").img  
+       cp  out/target/product/frost/vendor_boot.img    out/target/product/frost/vendor_boot-frost-A11-$(date +"%Y%m%d").img  
              
     - name: Release recovery image
       uses: softprops/action-gh-release@v2
@@ -95,4 +83,4 @@ jobs:
        tag_name: Poco_C40-frost
        name: TWRP37x_A11
        files: | 
-         twrp/out/target/product/frost/*boot*.img
+         twrp/out/target/product/frost/*vendor_boot*.img

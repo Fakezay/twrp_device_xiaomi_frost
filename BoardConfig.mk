@@ -20,7 +20,7 @@ TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := generic
 
 # A/B device flags
-TARGET_NO_RECOVERY := true
+TARGET_NO_RECOVERY := false
 AB_OTA_UPDATER := true
 AB_OTA_PARTITIONS += system system_ext product vbmeta_system boot vendor_boot
 

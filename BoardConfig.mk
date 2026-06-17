@@ -38,6 +38,20 @@ BOARD_BOOTIMAGE_PARTITION_SIZE := 100663296
 BOARD_RAMDISK_USE_LZ4 := true
 BOARD_KERNEL_PAGESIZE := 4096
 
+
+# Define que vamos gerar o recovery e que ele deve ir para o vendor_boot
+BOARD_USES_VENDOR_BOOT := true
+BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
+BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
+
+# Esta linha é vital para o TWRP moderno:
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/root/etc/recovery.fstab
+
+# Tamanho (usando o valor que você passou)
+BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 105906176
+
+
+
 # Desativar Android Verified Boot (AVB)
 BOARD_AVB_ENABLE := false
 BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3

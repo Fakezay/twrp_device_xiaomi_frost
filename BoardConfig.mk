@@ -20,37 +20,24 @@ TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := generic
 
 # A/B device flags
-TARGET_NO_RECOVERY := false
+TARGET_NO_RECOVERY := true
+BOARD_USES_RECOVERY_AS_BOOT := true
 AB_OTA_UPDATER := true
 AB_OTA_PARTITIONS += system system_ext product vbmeta_system boot vendor_boot
 
-# Configuração Vendor Boot (OBRIGATÓRIA PARA HEADER V3 E RAMDISK 0)
-BOARD_USES_VENDOR_BOOT := true
-BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
-BOARD_VENDOR_RAMDISK_RECOVERY_EXCLUDE_RECOVERY_FROM_BOOT := true
-
-# bootimg configuration
+# Boot Image Configuration
 BOARD_BOOT_HEADER_VERSION := 3
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
+TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb
+BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
 
 BOARD_BOOTIMAGE_PARTITION_SIZE := 100663296
 BOARD_RAMDISK_USE_LZ4 := true
 BOARD_KERNEL_PAGESIZE := 4096
 
-
-# Define que vamos gerar o recovery e que ele deve ir para o vendor_boot
-BOARD_USES_VENDOR_BOOT := true
-BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
-BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
-
-# Esta linha é vital para o TWRP moderno:
-TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/root/etc/recovery.fstab
-
-# Tamanho (usando o valor que você passou)
-BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 105906176
-
-
+# Recovery FSTAB
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/root/system/etc/recovery.fstab
 
 # Desativar Android Verified Boot (AVB)
 BOARD_AVB_ENABLE := false
@@ -60,48 +47,17 @@ BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
 BOARD_AVB_RECOVERY_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
 BOARD_AVB_RECOVERY_ALGORITHM := SHA256_RSA4096
 BOARD_AVB_RECOVERY_ROLLBACK_INDEX := 1
-BOARD_AVB_RECOVERY_ROLLBACK_INDEX_LOCATION := 1
-
-
-# Forçar inclusão do ramdisk do TWRP
-BOARD_INCLUDE_RECOVERY_RAMDISK_IN_VENDOR_BOOT := true
-BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
-
-# Tamanho exato da partição (101MB) - importante não deixar vazio
-BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 105906176
-
-# Isso força o build a não descartar o ramdisk
-BOARD_BUILD_VENDOR_BOOT_IMAGE := true
-
-
-
-
-
-# includes make_f2fs to support userdata partition in f2fs
+# Filesystem & Metadata
 TARGET_USERIMAGES_USE_F2FS := true
-
-# Creates metadata partition mount point under root for
-# the devices with metadata partition
 BOARD_USES_METADATA_PARTITION := true
-
-# Workaround for error copying vendor files to recovery ramdisk
 TARGET_COPY_OUT_VENDOR := vendor
-
 BOARD_ROOT_EXTRA_FOLDERS := cust
 
-# Adjusted flags for decryption
+# Decryption
 PLATFORM_SECURITY_PATCH := 2099-12-31
 VENDOR_SECURITY_PATCH := 2099-12-31
 PLATFORM_VERSION := 99.87.36
 PLATFORM_VERSION_LAST_STABLE := $(PLATFORM_VERSION)
-
-# Define o caminho do DTB (certifique-se de que o nome do arquivo seja exatamente 'dtb')
-TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb
-
-# Força o sistema a injetar o DTB na imagem
-BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
-
-
 
 # Recovery
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888

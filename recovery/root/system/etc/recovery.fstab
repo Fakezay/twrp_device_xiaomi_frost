@@ -6,7 +6,7 @@ vendor                                     /vendor         ext4    ro,barrier=1,
 system_ext                                 /system_ext     ext4    ro,barrier=1,discard                                wait,slotselect,avb=vbmeta_system,logical,first_stage_mount
 product                                    /product        ext4    ro,barrier=1,discard                                wait,slotselect,avb_vbmeta_system,logical,first_stage_mount
 
-dev/block/by-name/metadata                 /metadata       ext4    noatime,nosuid,nodev,discard,data=journal,noauto_da_alloc    wait,check,formattable,first_stage_mount
+/dev/block/by-name/metadata                 /metadata       ext4    noatime,nosuid,nodev,discard,data=journal,noauto_da_alloc    wait,check,formattable,first_stage_mount
 /dev/block/by-name/userdata                /data           f2fs    noatime,nosuid,nodev,discard,reserve_root=32768,resgid=1065,fsync_mode=nobarrier,inlinecrypt   latemount,wait,check,formattable,quota,reservedsize=128M,checkpoint=fs,fileencryption=aes-256-xts:aes-256-cts:v2+emmc_optimized,keydirectory=/metadata/vold/metadata_encryption
 
 /dev/block/by-name/misc                    /misc           emmc    defaults                                            defaults

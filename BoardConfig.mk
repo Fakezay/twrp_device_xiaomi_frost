@@ -115,9 +115,9 @@ TW_INCLUDE_NTFS_3G := true
 # Use mke2fs for formatting ext4 partitions
 TARGET_USES_MKE2FS := true
 
-# Kernel module loading for touch, battery etc
-TW_LOAD_VENDOR_MODULES := $(shell echo \"$(shell ls $(DEVICE_PATH)/recovery/root/vendor/lib/modules/1.1)\")
-TW_LOAD_VENDOR_BOOT_MODULES := true
+# Kernel module loading disabled for stability
+TW_LOAD_VENDOR_MODULES := false
+TW_LOAD_VENDOR_BOOT_MODULES := false
 
 # Disable decryption for initial boot stability
 TW_INCLUDE_CRYPTO := false

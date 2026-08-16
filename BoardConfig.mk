@@ -105,8 +105,8 @@ TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 TW_STATUS_ICONS_ALIGN := center
 TW_CUSTOM_CLOCK_POS := 610
 
-# Use our own USB config
-TW_EXCLUDE_DEFAULT_USB_INIT := true
+# Standard USB config for recovery
+TW_EXCLUDE_DEFAULT_USB_INIT := false
 
 # For mounting NTFS
 TW_INCLUDE_NTFS_3G := true
@@ -118,13 +118,10 @@ TARGET_USES_MKE2FS := true
 TW_LOAD_VENDOR_MODULES := $(shell echo \"$(shell ls $(DEVICE_PATH)/recovery/root/vendor/lib/modules/1.1)\")
 TW_LOAD_VENDOR_BOOT_MODULES := true
 
-# Include decryption support
-TW_INCLUDE_CRYPTO := true
+# Disable decryption for initial boot stability
+TW_INCLUDE_CRYPTO := false
+TW_INCLUDE_FBE_METADATA_DECRYPT := false
 RECOVERY_SDCARD_ON_DATA := true
-# include below when enabling decryption
-# without these it may stuck on TWRP splash
-TARGET_RECOVERY_DEVICE_MODULES += libion
-RECOVERY_LIBRARY_SOURCE_FILES += $(TARGET_OUT_SHARED_LIBRARIES)/libion.so
 
 # Don't mount apex files (no need for now)
 TW_EXCLUDE_APEX := true

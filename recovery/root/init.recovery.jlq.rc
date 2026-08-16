@@ -38,3 +38,8 @@ on fs
 
 on boot
     setprop sys.usb.config adb
+    start recovery
+
+service recovery /system/bin/recovery
+    socket recovery stream 422 system system
+    seclabel u:r:recovery:s0

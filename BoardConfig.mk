@@ -27,7 +27,7 @@ AB_OTA_PARTITIONS += system system_ext product vbmeta_system boot vendor_boot
 
 # Boot Image Configuration
 BOARD_BOOT_HEADER_VERSION := 3
-BOARD_KERNEL_CMDLINE := androidboot.selinux=permissive enforcing=0 androidboot.init_fatal_reboot_target=recovery
+BOARD_KERNEL_CMDLINE := androidboot.selinux=permissive enforcing=0
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
 TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb

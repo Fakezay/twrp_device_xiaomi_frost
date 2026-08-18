@@ -27,7 +27,8 @@ AB_OTA_PARTITIONS += system system_ext product vbmeta_system boot vendor_boot
 
 # Boot Image Configuration
 BOARD_BOOT_HEADER_VERSION := 3
-BOARD_KERNEL_CMDLINE := androidboot.selinux=permissive enforcing=0
+# Fix #3: CMDLINE vazio como stock. Fix #4: init_fatal_reboot_target para diagnosticar panic
+BOARD_KERNEL_CMDLINE := androidboot.init_fatal_reboot_target=bootloader
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
 TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb
@@ -45,7 +46,8 @@ BOARD_AVB_ENABLE := true
 BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
 BOARD_AVB_BOOT_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
 BOARD_AVB_BOOT_ALGORITHM := SHA256_RSA4096
-BOARD_AVB_BOOT_ROLLBACK_INDEX := 1
+# Fix #5: Rollback index alto para evitar bloqueio de anti-rollback por hardware
+BOARD_AVB_BOOT_ROLLBACK_INDEX := 99
 BOARD_AVB_BOOT_ROLLBACK_INDEX_LOCATION := 1
 BOARD_AVB_BOOT_ADD_HASH_FOOTER_ARGS := --partition_size 100663296
 # Filesystem & Metadata

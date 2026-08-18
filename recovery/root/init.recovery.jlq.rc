@@ -1,21 +1,12 @@
 on init
     write /sys/class/backlight/panel0-backlight/brightness 200
-
-    # Set USB controller (must match stock kernel DT)
     setprop sys.usb.controller "30740000.usb"
     setprop vendor.usb.controller ${sys.usb.controller}
-    setprop sys.usb.configfs 1
-    setprop sys.usb.ffs.aio_compat 1
-
-on property:ro.boot.usbconfigfs=false
-    setprop sys.usb.configfs 0
-
-on property:ro.boot.usbcontroller=*
-    setprop sys.usb.controller ${ro.boot.usbcontroller}
 
 on fs
-    wait /dev/block/platform/0.soc/${ro.boot.bootdevice}
+    wait /dev/block/platform/0.soc/${ro.boot.bootdevice} 2
     symlink /dev/block/platform/0.soc/${ro.boot.bootdevice} /dev/block/bootdevice
 
 on boot
     setprop sys.usb.config adb
+    start recovery

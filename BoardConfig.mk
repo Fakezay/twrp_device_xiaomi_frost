@@ -122,8 +122,8 @@ TW_LOAD_VENDOR_MODULES := false
 TW_LOAD_VENDOR_BOOT_MODULES := false
 
 # Disable decryption for initial boot stability
-TW_INCLUDE_CRYPTO := false
-TW_INCLUDE_FBE_METADATA_DECRYPT := false
+TW_INCLUDE_CRYPTO := true
+TW_INCLUDE_FBE_METADATA_DECRYPT := true
 RECOVERY_SDCARD_ON_DATA := true
 
 # Don't mount apex files (no need for now)

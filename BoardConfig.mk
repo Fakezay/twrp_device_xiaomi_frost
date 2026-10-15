@@ -23,7 +23,7 @@ TARGET_2ND_CPU_VARIANT := generic
 TARGET_NO_RECOVERY := true
 BOARD_USES_RECOVERY_AS_BOOT := true
 AB_OTA_UPDATER := true
-AB_OTA_PARTITIONS += system system_ext product vbmeta_system boot vendor_boot
+AB_OTA_PARTITIONS += system system_ext product vbmeta_system boot vendor
 
 # Boot Image Configuration
 BOARD_BOOT_HEADER_VERSION := 3
@@ -72,9 +72,9 @@ BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
 
 ##### TWRP Flags #####
-TW_HAS_EDL_MODE := true
+TW_HAS_EDL_MODE := false
 TW_BACKUP_EXCLUSIONS := /data/fonts
-TW_DEFAULT_LANGUAGE := ru
+TW_DEFAULT_LANGUAGE := pt_PT
 
 # Include more languages than English
 TW_EXTRA_LANGUAGES := true
@@ -97,16 +97,10 @@ TW_NO_HAPTICS := true
 # https://gerrit.twrp.me/c/android_bootable_recovery/+/6945
 TW_USE_LEGACY_BATTERY_SERVICES := true
 
-# Time
-TARGET_RECOVERY_QCOM_RTC_FIX := true
-
 # Display
 TARGET_SCREEN_DENSITY := 320
 TW_THEME := portrait_hdpi
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
-# Statusbar icons flags
-TW_STATUS_ICONS_ALIGN := center
-TW_CUSTOM_CLOCK_POS := 610
 
 # Standard USB config for recovery
 TW_EXCLUDE_DEFAULT_USB_INIT := false
@@ -142,8 +136,8 @@ OF_USE_MAGISKBOOT := 1
 OF_USE_MAGISKBOOT_FOR_ALL_PATCHES := 1
 OF_NO_TREBLE_COMPATIBILITY_CHECK := 1
 OF_NO_MIUI_PATCH_WARNING := 1
-OF_SCREEN_H := 1650
-OF_STATUS_H := 80
+OF_SCREEN_H := 2475
+OF_STATUS_H := 72
 OF_STATUS_INDENT_LEFT := 40
 OF_STATUS_INDENT_RIGHT := 40
 OF_CLOCK_POS := 1

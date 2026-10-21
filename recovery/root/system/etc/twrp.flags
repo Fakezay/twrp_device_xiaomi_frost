@@ -1,31 +1,16 @@
-# Standard AOSP partitions
-/boot             emmc     /dev/block/by-name/boot                flags=slotselect
-/vendor_boot      emmc     /dev/block/by-name/vendor_boot         flags=slotselect;flashimg
-/dtbo             emmc     /dev/block/by-name/dtbo                flags=slotselect
-/vbmeta           emmc     /dev/block/by-name/vbmeta              flags=slotselect;flashimg
+# <mnt_point>   <type>  <device>                            <device2>               <flags>
+/boot           emmc    /dev/block/by-name/boot                                     flags=display="Boot";backup=1;flashimg=1;slotselect
+/dtbo           emmc    /dev/block/by-name/dtbo                                     flags=display="DTBO";backup=1;flashimg=1;slotselect
+/vbmeta         emmc    /dev/block/by-name/vbmeta                                   flags=display="VBMeta";backup=1;flashimg=1;slotselect
+/vbmeta_system  emmc    /dev/block/by-name/vbmeta_system                            flags=display="VBMeta System";backup=1;flashimg=1;slotselect
+/vbmeta_vendor  emmc    /dev/block/by-name/vbmeta_vendor                            flags=display="VBMeta Vendor";backup=1;flashimg=1;slotselect
+/super          emmc    /dev/block/by-name/super                                    flags=display="Super (Dynamic)";backup=1;flashimg=1
+/metadata       ext4    /dev/block/by-name/metadata                                 flags=display="Metadata";backup=1;wipeingui
+/data           f2fs    /dev/block/by-name/userdata                                 flags=display="Data";wipeingui;backup=1
+/cache          ext4    /dev/block/by-name/rescue                                   flags=display="Cache (Rescue)";wipeingui;backup=1
+/persist        ext4    /dev/block/by-name/persist                                  flags=display="Persist";backup=1
+/misc           emmc    /dev/block/by-name/misc                                     flags=display="Misc";backup=1;flashimg=1
 
-# Needed for time
-/persist          ext4     /dev/block/by-name/persist
-
-# Backup
-/persist_image    emmc     /dev/block/by-name/persist             flags=backup
-/cust             ext4     /dev/block/bootdevice/by-name/cust     flags=display="Cust";backup=1
-/cust             emmc     /dev/block/bootdevice/by-name/cust     flags=display="Cust_image";backup=1;flashimg=1
-
-#
-/cache            ext4     /dev/block/by-name/rescue              flags=display=cache
-/firmware_mnt     emmc     /dev/block/by-name/modem               flags=display="Modem";backup=1;flashimg=1;slotselect
-/dsp_firmware     emmc     /dev/block/by-name/dsp                 flags=backup=1;subpartitionof=/modem;slotselect
-/bt_firmware      emmc     /dev/block/bootdevice/by-name/bluetooth      flags=backup=1;subpartitionof=/modem;slotselect
-
-#/firmware_mnt     vfat     /dev/block/by-name/modem
-#/dsp_firmware     vfat     /dev/block/by-name/dsp
-#/bt_firmware      vfat     /dev/block/bootdevice/by-name/bluetooth               
-
-
-# Removable storage
-/external_sd      auto    /dev/block/mmcblk1p1
-# Note: if your disk connected through OTG have multiple partitions then
-# only 1st partition is mounted for convenience
-# if you want to mount all partitions then replace sdg1 with sdg*, but it is somewhat errorprone
-/usb-otg          auto    /dev/block/sdg1                         flags=storage;removable;wipeingui
+# Armazenamentos Removíveis
+/sdcard1        auto    /dev/block/mmcblk1p1                /dev/block/mmcblk1      flags=display="MicroSD Card";storage;wipeingui;removable
+/usb_otg        auto    /dev/block/sda1                     /dev/block/sda          flags=display="USB-OTG";storage;wipeingui;removable

@@ -1,4 +1,5 @@
 # Inherit from common AOSP config
+$(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/base.mk)
 # Inherit some common TWRP stuff.
 $(call inherit-product, vendor/twrp/config/common.mk)
@@ -6,7 +7,7 @@ $(call inherit-product, vendor/twrp/config/common.mk)
 
 # Device identifier. This must come after all inclusions
 PRODUCT_DEVICE := frost
-PRODUCT_NAME := twrp_$(PRODUCT_DEVICE)
+PRODUCT_NAME := twrp_frost
 PRODUCT_BRAND := Redmi
 PRODUCT_MODEL := frost
 PRODUCT_MANUFACTURER := Xiaomi
@@ -15,7 +16,7 @@ PRODUCT_MANUFACTURER := Xiaomi
 DEVICE_PATH := device/xiaomi/frost
 
 # Inherit from device
-$(call inherit-product, $(DEVICE_PATH)/device.mk)
+#$(call inherit-product, $(DEVICE_PATH)/device.mk)
 
 PRODUCT_GMS_CLIENTID_BASE := android-xiaomi
 

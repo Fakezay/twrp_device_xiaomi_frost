@@ -3,7 +3,6 @@ ALLOW_MISSING_DEPENDENCIES := true
 
 # Platform
 TARGET_BOARD_PLATFORM := jr510
-#TARGET_BOARD_PLATFORM := bengal
 
 # Bootloader
 TARGET_BOOTLOADER_BOARD_NAME := $(PRODUCT_DEVICE)
@@ -24,35 +23,44 @@ TARGET_2ND_CPU_VARIANT := generic
 TARGET_NO_RECOVERY := true
 BOARD_USES_RECOVERY_AS_BOOT := true
 AB_OTA_UPDATER := true
-AB_OTA_PARTITIONS += system system_ext product vbmeta_system
+AB_OTA_PARTITIONS += system system_ext product vbmeta_system boot vendor
 
-# bootimg configuration
+# Boot Image Configuration
 BOARD_BOOT_HEADER_VERSION := 3
+# Fix #3: CMDLINE vazio como stock. Fix #4: init_fatal_reboot_target para diagnosticar panic
+BOARD_KERNEL_CMDLINE := androidboot.init_fatal_reboot_target=bootloader
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
+TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb
+BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
 
 BOARD_BOOTIMAGE_PARTITION_SIZE := 100663296
 BOARD_RAMDISK_USE_LZ4 := true
+BOARD_KERNEL_PAGESIZE := 4096
 
+# Recovery FSTAB
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/root/system/etc/recovery.fstab
+
+# Android Verified Boot (AVB)
 BOARD_AVB_ENABLE := true
-
-# includes make_f2fs to support userdata partition in f2fs
+BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
+BOARD_AVB_BOOT_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
+BOARD_AVB_BOOT_ALGORITHM := SHA256_RSA4096
+# Fix #5: Rollback index alto para evitar bloqueio de anti-rollback por hardware
+BOARD_AVB_BOOT_ROLLBACK_INDEX := 99
+BOARD_AVB_BOOT_ROLLBACK_INDEX_LOCATION := 1
+BOARD_AVB_BOOT_ADD_HASH_FOOTER_ARGS := --partition_size 100663296
+# Filesystem & Metadata
 TARGET_USERIMAGES_USE_F2FS := true
-
-# Creates metadata partition mount point under root for
-# the devices with metadata partition
 BOARD_USES_METADATA_PARTITION := true
-
-# Workaround for error copying vendor files to recovery ramdisk
 TARGET_COPY_OUT_VENDOR := vendor
-
 BOARD_ROOT_EXTRA_FOLDERS := cust
 
-# Adjusted flags for decryption
-PLATFORM_SECURITY_PATCH := 2099-12-31
-VENDOR_SECURITY_PATCH := 2099-12-31
-PLATFORM_VERSION := 99.87.36
+# Platform Version & Security Patch (Match Stock MIUI V13.0.25)
+PLATFORM_VERSION := 11
 PLATFORM_VERSION_LAST_STABLE := $(PLATFORM_VERSION)
+PLATFORM_SECURITY_PATCH := 2023-12-01
+VENDOR_SECURITY_PATCH := 2023-12-01
 
 # Recovery
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
@@ -64,15 +72,14 @@ BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
 
 ##### TWRP Flags #####
-TW_HAS_EDL_MODE := true
 TW_BACKUP_EXCLUSIONS := /data/fonts
-TW_DEFAULT_LANGUAGE := ru
+TW_DEFAULT_LANGUAGE := pt_PT
 
 # Include more languages than English
 TW_EXTRA_LANGUAGES := true
 
 # Version
-TW_DEVICE_VERSION := frost_V13.0.13 - lopestom
+TW_DEVICE_VERSION := frost_V13.0.25 - Official
 
 # Brightness
 TW_BRIGHTNESS_PATH := /sys/class/backlight/panel0-backlight/brightness
@@ -89,20 +96,13 @@ TW_NO_HAPTICS := true
 # https://gerrit.twrp.me/c/android_bootable_recovery/+/6945
 TW_USE_LEGACY_BATTERY_SERVICES := true
 
-# Time
-TARGET_RECOVERY_QCOM_RTC_FIX := true
-
 # Display
 TARGET_SCREEN_DENSITY := 320
 TW_THEME := portrait_hdpi
-# Statusbar icons flags
-TW_STATUS_ICONS_ALIGN := center
-TW_CUSTOM_CLOCK_POS := 610
-#TW_CUSTOM_CPU_POS := 50
-#TW_CUSTOM_BATTERY_POS := 290
+TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 
-# Use our own USB config
-TW_EXCLUDE_DEFAULT_USB_INIT := true
+# Standard USB config for recovery
+TW_EXCLUDE_DEFAULT_USB_INIT := false
 
 # For mounting NTFS
 TW_INCLUDE_NTFS_3G := true
@@ -110,17 +110,14 @@ TW_INCLUDE_NTFS_3G := true
 # Use mke2fs for formatting ext4 partitions
 TARGET_USES_MKE2FS := true
 
-# Kernel module loading for touch, battery etc
-TW_LOAD_VENDOR_MODULES := $(shell echo \"$(shell ls $(DEVICE_PATH)/recovery/root/vendor/lib/modules/1.1)\")
-TW_LOAD_VENDOR_BOOT_MODULES := true
+# Kernel module loading disabled for stability
+TW_LOAD_VENDOR_MODULES := false
+TW_LOAD_VENDOR_BOOT_MODULES := false
 
-# Include decryption support
+# Disable decryption for initial boot stability
 TW_INCLUDE_CRYPTO := true
+TW_INCLUDE_FBE_METADATA_DECRYPT := true
 RECOVERY_SDCARD_ON_DATA := true
-# include below when enabling decryption
-# without these it may stuck on TWRP splash
-TARGET_RECOVERY_DEVICE_MODULES += libion
-RECOVERY_LIBRARY_SOURCE_FILES += $(TARGET_OUT_SHARED_LIBRARIES)/libion.so
 
 # Don't mount apex files (no need for now)
 TW_EXCLUDE_APEX := true
@@ -129,3 +126,20 @@ TW_EXCLUDE_APEX := true
 TWRP_INCLUDE_LOGCAT := true
 TARGET_USES_LOGD := true
 TW_INCLUDE_RESETPROP := true
+
+# OrangeFox Recovery Specific Flags
+FOX_MAINTAINER_PATCH_VERSION := 1
+OF_MAINTAINER := Fakezay
+FOX_AB_DEVICE := 1
+OF_USE_MAGISKBOOT := 1
+OF_USE_MAGISKBOOT_FOR_ALL_PATCHES := 1
+OF_NO_TREBLE_COMPATIBILITY_CHECK := 1
+OF_NO_MIUI_PATCH_WARNING := 1
+OF_SCREEN_H := 2475
+OF_STATUS_H := 72
+OF_STATUS_INDENT_LEFT := 40
+OF_STATUS_INDENT_RIGHT := 40
+OF_CLOCK_POS := 1
+OF_USE_GREEN_LED := 0
+OF_FLASHLIGHT_ENABLE := 0
+

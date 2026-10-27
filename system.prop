@@ -1,7 +1,12 @@
-####### generate by lopestom #######
+####### Maintainer: Fakezay #######
 ro.adb.secure=0
 ro.debuggable=1
 ro.vendor.qti.va_aosp.support=1
 persist.fuse_sdcard=true
 persist.sys.fuse.passthrough.enable=true
-####### generate by lopestom #######
+persist.sys.usb.config=adb
+persist.vendor.usb.config=adb
+ro.twrp.boot=1
+ro.twrp.default_language=en
+ro.twrp.version=3.7.0_11-frost_V13.0.25 - Fakezay
+####### Maintainer: Fakezay #######

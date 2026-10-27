@@ -1,5 +1,9 @@
 on init
+    mkdir /dev/graphics 0775 root graphics
+    symlink /dev/fb0 /dev/graphics/fb0
+    chmod 0666 /dev/graphics/fb0
     write /sys/class/backlight/panel0-backlight/brightness 1800
+    write /sys/class/leds/lcd-backlight/brightness 1800
 
     mkdir /config
     mount configfs none /config
@@ -39,6 +43,12 @@ on property:ro.boot.usbconfigfs=false
 on property:ro.boot.usbcontroller=*
     setprop sys.usb.controller ${ro.boot.usbcontroller}
 
+on property:sys.usb.config=mtp,adb
+    start adbd
+
+on property:sys.usb.config=mtp
+    setprop sys.usb.config adb
+
 on property:sys.usb.ffs.ready=1 && property:sys.usb.config=adb && property:sys.usb.configfs=1
     write /config/usb_gadget/g1/configs/b.1/strings/0x409/configuration "adb"
     rm /config/usb_gadget/g1/configs/b.1/f1
@@ -61,8 +71,36 @@ on fs
     symlink /dev/block/platform/0.soc/${ro.boot.bootdevice} /dev/block/bootdevice
     symlink /dev/block/platform/0.soc/${ro.boot.bootdevice}/by-name /dev/block/by-name
 
+    chown root system /mnt/vendor/persist
+    chmod 0771 /mnt/vendor/persist
+    restorecon_recursive /mnt/vendor/persist
+    mkdir /mnt/vendor/persist/data 0700 system system
+
+on post-fs
+    start boot-hal-1-1
+    exec - root root -- /system/bin/fix_device.sh --once
+
 on boot
-    symlink /sys/class/power_supply/jcmbattery /sys/class/power_supply/battery
-    chmod 0666 /sys/class/power_supply/jcmbattery/capacity
-    chmod 0666 /sys/class/power_supply/jcmbattery/status
+    setprop sys.usb.config adb
+    start fix_device
     chmod 0666 /sys/class/thermal/thermal_zone0/temp
+    chmod 0666 /sys/class/thermal/thermal_zone1/temp
+    chmod 0666 /sys/class/thermal/thermal_zone2/temp
+    chmod 0666 /sys/class/thermal/thermal_zone3/temp
+    chmod 0666 /sys/class/thermal/thermal_zone4/temp
+    chmod 0666 /dev/graphics/fb0
+    write /sys/class/backlight/panel0-backlight/brightness 1800
+    write /sys/class/leds/lcd-backlight/brightness 1800
+
+on property:sys.usb.config=none && property:sys.usb.configfs=1
+    write /config/usb_gadget/g1/UDC "none"
+    stop adbd
+    setprop sys.usb.ffs.ready 0
+    setprop sys.usb.state ${sys.usb.config}
+
+# Sideload triggers handled centrally in init.rc
+
+service fix_device /system/bin/fix_device.sh
+    user root
+    group root
+    seclabel u:r:recovery:s0

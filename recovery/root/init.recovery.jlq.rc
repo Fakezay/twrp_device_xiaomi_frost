@@ -81,6 +81,9 @@ on post-fs
     exec - root root -- /system/bin/fix_device.sh --once
 
 on boot
+    mkdir /sideload 0777 root root
+    chmod 0777 /sideload
+    chmod 0666 /dev/fuse
     setprop sys.usb.config adb
     start fix_device
     chmod 0666 /sys/class/thermal/thermal_zone0/temp
@@ -96,9 +99,31 @@ on property:sys.usb.config=none && property:sys.usb.configfs=1
     write /config/usb_gadget/g1/UDC "none"
     stop adbd
     setprop sys.usb.ffs.ready 0
+    rm /config/usb_gadget/g1/configs/b.1/f1
+    rm /config/usb_gadget/g1/configs/b.1/f2
     setprop sys.usb.state ${sys.usb.config}
 
-# Sideload triggers handled centrally in init.rc
+on property:sys.usb.config=sideload && property:sys.usb.configfs=1
+    stop adbd
+    write /config/usb_gadget/g1/idVendor 0x18d1
+    write /config/usb_gadget/g1/idProduct 0xd001
+    write /config/usb_gadget/g1/configs/b.1/strings/0x409/configuration "adb"
+    rm /config/usb_gadget/g1/configs/b.1/f1
+    rm /config/usb_gadget/g1/configs/b.1/f2
+    symlink /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f1
+    write /config/usb_gadget/g1/UDC ${sys.usb.controller}
+    setprop sys.usb.state ${sys.usb.config}
+
+on property:sys.usb.config=adb,sideload && property:sys.usb.configfs=1
+    stop adbd
+    write /config/usb_gadget/g1/idVendor 0x18d1
+    write /config/usb_gadget/g1/idProduct 0xd001
+    write /config/usb_gadget/g1/configs/b.1/strings/0x409/configuration "adb"
+    rm /config/usb_gadget/g1/configs/b.1/f1
+    rm /config/usb_gadget/g1/configs/b.1/f2
+    symlink /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f1
+    write /config/usb_gadget/g1/UDC ${sys.usb.controller}
+    setprop sys.usb.state ${sys.usb.config}
 
 service fix_device /system/bin/fix_device.sh
     user root

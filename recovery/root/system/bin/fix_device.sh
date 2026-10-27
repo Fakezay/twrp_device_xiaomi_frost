@@ -4,6 +4,9 @@
 
 mkdir -p /tmp/battery 2>/dev/null
 chmod 0777 /tmp/battery 2>/dev/null
+mkdir -p /sideload 2>/dev/null
+chmod 0777 /sideload 2>/dev/null
+chmod 0666 /dev/fuse 2>/dev/null
 
 update_metrics() {
     # 1. Update CPU Temperature
@@ -46,49 +49,56 @@ update_metrics() {
         rm -f /sideload/exit 2>/dev/null
     fi
 
-    # 4. USB Guardian: Keep ADB & Sideload always alive
+    # 4. USB Guardian: Keep ADB & Sideload alive without interfering with transitions
     CONF=$(getprop sys.usb.config)
     CONTROLLER="30740000.usb"
 
     if [ "$CONF" = "sideload" ] || [ "$CONF" = "adb,sideload" ]; then
-        # Sideload mode
-        if [ ! -e "/config/usb_gadget/g1/configs/b.1/f1" ]; then
-            rm -f /config/usb_gadget/g1/configs/b.1/f1 /config/usb_gadget/g1/configs/b.1/f2 2>/dev/null
-            ln -sf /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f1 2>/dev/null
+        # Sideload mode: Ensure adbd is dead so minadbd has exclusive access to /dev/usb-ffs/adb
+        if pgrep adbd >/dev/null 2>&1; then
+            pkill -9 adbd 2>/dev/null
         fi
         CURRENT_UDC=$(cat /config/usb_gadget/g1/UDC 2>/dev/null)
         if [ "$CURRENT_UDC" != "$CONTROLLER" ]; then
             echo "$CONTROLLER" > /config/usb_gadget/g1/UDC 2>/dev/null
         fi
-        setprop sys.usb.state "$CONF"
+        STATE=$(getprop sys.usb.state)
+        if [ "$STATE" != "$CONF" ]; then
+            setprop sys.usb.state "$CONF"
+        fi
+    elif [ "$CONF" = "none" ]; then
+        # Transitioning state between modes - do not interfere!
+        :
     else
         # Normal recovery mode
-        # If sys.usb.config was set to none, mtp, or mtp,adb, revert to adb
-        if [ "$CONF" = "none" ] || [ "$CONF" = "mtp" ] || [ "$CONF" = "mtp,adb" ] || [ -z "$CONF" ]; then
+        # If sys.usb.config was set to mtp or mtp,adb, force to adb
+        if [ "$CONF" = "mtp" ] || [ "$CONF" = "mtp,adb" ] || [ -z "$CONF" ]; then
             setprop sys.usb.config adb
             CONF="adb"
         fi
 
-        # Ensure adbd process is running
-        if ! pgrep adbd >/dev/null 2>&1; then
-            start adbd 2>/dev/null
-        fi
+        # In normal mode, ensure adbd process is running
+        if [ "$CONF" = "adb" ]; then
+            if ! pgrep adbd >/dev/null 2>&1; then
+                start adbd 2>/dev/null
+            fi
 
-        # Ensure ffs.adb link is present
-        if [ ! -e "/config/usb_gadget/g1/configs/b.1/f1" ]; then
-            rm -f /config/usb_gadget/g1/configs/b.1/f1 /config/usb_gadget/g1/configs/b.1/f2 2>/dev/null
-            ln -sf /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f1 2>/dev/null
-        fi
+            # Ensure ffs.adb link is present
+            if [ ! -e "/config/usb_gadget/g1/configs/b.1/f1" ]; then
+                rm -f /config/usb_gadget/g1/configs/b.1/f1 /config/usb_gadget/g1/configs/b.1/f2 2>/dev/null
+                ln -sf /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f1 2>/dev/null
+            fi
 
-        # Ensure UDC is bound to USB controller
-        CURRENT_UDC=$(cat /config/usb_gadget/g1/UDC 2>/dev/null)
-        if [ "$CURRENT_UDC" != "$CONTROLLER" ]; then
-            echo "$CONTROLLER" > /config/usb_gadget/g1/UDC 2>/dev/null
-        fi
+            # Ensure UDC is bound to USB controller
+            CURRENT_UDC=$(cat /config/usb_gadget/g1/UDC 2>/dev/null)
+            if [ "$CURRENT_UDC" != "$CONTROLLER" ]; then
+                echo "$CONTROLLER" > /config/usb_gadget/g1/UDC 2>/dev/null
+            fi
 
-        STATE=$(getprop sys.usb.state)
-        if [ "$STATE" != "adb" ]; then
-            setprop sys.usb.state adb
+            STATE=$(getprop sys.usb.state)
+            if [ "$STATE" != "adb" ]; then
+                setprop sys.usb.state adb
+            fi
         fi
     fi
 }

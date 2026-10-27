@@ -73,13 +73,13 @@ TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
 
 ##### TWRP Flags #####
 TW_BACKUP_EXCLUSIONS := /data/fonts
-TW_DEFAULT_LANGUAGE := pt_PT
+TW_DEFAULT_LANGUAGE := en
 
 # Include more languages than English
 TW_EXTRA_LANGUAGES := true
 
 # Version
-TW_DEVICE_VERSION := frost_V13.0.25 - Official
+TW_DEVICE_VERSION := frost_V13.0.25 - Fakezay
 
 # Brightness
 TW_BRIGHTNESS_PATH := /sys/class/backlight/panel0-backlight/brightness

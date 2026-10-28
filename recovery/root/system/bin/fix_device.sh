@@ -51,6 +51,8 @@ update_metrics() {
 
     # 4. USB Guardian: Keep ADB & Sideload alive without interfering with transitions
     CONF=$(getprop sys.usb.config)
+    STATE=$(getprop sys.usb.state)
+    FFS_READY=$(getprop sys.usb.ffs.ready)
     CONTROLLER="30740000.usb"
 
     if [ "$CONF" = "sideload" ] || [ "$CONF" = "adb,sideload" ]; then
@@ -58,13 +60,15 @@ update_metrics() {
         if pgrep adbd >/dev/null 2>&1; then
             pkill -9 adbd 2>/dev/null
         fi
-        CURRENT_UDC=$(cat /config/usb_gadget/g1/UDC 2>/dev/null)
-        if [ "$CURRENT_UDC" != "$CONTROLLER" ]; then
-            echo "$CONTROLLER" > /config/usb_gadget/g1/UDC 2>/dev/null
-        fi
-        STATE=$(getprop sys.usb.state)
         if [ "$STATE" != "$CONF" ]; then
             setprop sys.usb.state "$CONF"
+        fi
+        # Only bind UDC once minadbd has written descriptors to ep0 (FFS_READY=1)
+        if [ "$FFS_READY" = "1" ]; then
+            CURRENT_UDC=$(cat /config/usb_gadget/g1/UDC 2>/dev/null)
+            if [ "$CURRENT_UDC" != "$CONTROLLER" ]; then
+                echo "$CONTROLLER" > /config/usb_gadget/g1/UDC 2>/dev/null
+            fi
         fi
     elif [ "$CONF" = "none" ]; then
         # Transitioning state between modes - do not interfere!
@@ -89,15 +93,16 @@ update_metrics() {
                 ln -sf /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f1 2>/dev/null
             fi
 
-            # Ensure UDC is bound to USB controller
-            CURRENT_UDC=$(cat /config/usb_gadget/g1/UDC 2>/dev/null)
-            if [ "$CURRENT_UDC" != "$CONTROLLER" ]; then
-                echo "$CONTROLLER" > /config/usb_gadget/g1/UDC 2>/dev/null
-            fi
-
-            STATE=$(getprop sys.usb.state)
             if [ "$STATE" != "adb" ]; then
                 setprop sys.usb.state adb
+            fi
+
+            # Ensure UDC is bound to USB controller only when FFS is ready
+            if [ "$FFS_READY" = "1" ]; then
+                CURRENT_UDC=$(cat /config/usb_gadget/g1/UDC 2>/dev/null)
+                if [ "$CURRENT_UDC" != "$CONTROLLER" ]; then
+                    echo "$CONTROLLER" > /config/usb_gadget/g1/UDC 2>/dev/null
+                fi
             fi
         fi
     fi

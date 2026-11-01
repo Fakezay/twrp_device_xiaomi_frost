@@ -8,6 +8,21 @@ mkdir -p /sideload 2>/dev/null
 chmod 0777 /sideload 2>/dev/null
 chmod 0666 /dev/fuse 2>/dev/null
 
+# Force ADB authorization disabled on post-fs so TWRP ADB never shows "unauthorized"
+if [ "$1" = "--once" ]; then
+    if [ -x /system/bin/resetprop ]; then
+        /system/bin/resetprop -n ro.adb.secure 0
+        /system/bin/resetprop -n ro.debuggable 1
+        /system/bin/resetprop -n ro.secure 0
+    fi
+    touch /adb_keys 2>/dev/null
+    chmod 0644 /adb_keys 2>/dev/null
+    stop adbd 2>/dev/null
+    usleep 50000 2>/dev/null || sleep 0.05
+    start adbd 2>/dev/null
+    exit 0
+fi
+
 update_metrics() {
     # 1. Update CPU Temperature
     MAX_TEMP=0
@@ -57,8 +72,8 @@ update_metrics() {
     CONTROLLER="30740000.usb"
 
     if [ "$CONF" = "sideload" ] || [ "$CONF" = "adb,sideload" ]; then
-        # Sideload mode: ensure UDC and state are active once minadbd is ready
-        if [ "$FFS_READY" = "1" ]; then
+        # Sideload mode: if minadbd is running, ep1 exists, or ffs.ready is 1, ensure UDC is active!
+        if [ "$FFS_READY" = "1" ] || [ -e /dev/usb-ffs/adb/ep1 ] || pgrep -x minadbd >/dev/null 2>&1; then
             if [ ! -L "/config/usb_gadget/g1/configs/b.1/f1" ]; then
                 ln -sf /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f1 2>/dev/null
             fi
@@ -81,9 +96,15 @@ update_metrics() {
             CONF="adb"
         fi
 
-        # In normal mode, ensure adbd process is running
         if [ "$CONF" = "adb" ]; then
-            if ! pgrep adbd >/dev/null 2>&1; then
+            # Ensure minadbd is not running in normal mode
+            if pgrep -x minadbd >/dev/null 2>&1; then
+                killall -9 minadbd 2>/dev/null
+                pkill -9 -x minadbd 2>/dev/null
+            fi
+
+            # In normal mode, ensure adbd process is running
+            if ! pgrep -x adbd >/dev/null 2>&1; then
                 start adbd 2>/dev/null
             fi
 
@@ -96,8 +117,8 @@ update_metrics() {
                 setprop sys.usb.state adb
             fi
 
-            # Ensure UDC is bound to USB controller only when FFS is ready
-            if [ "$FFS_READY" = "1" ]; then
+            # Ensure UDC is bound to USB controller only when FFS is ready or ep1 exists
+            if [ "$FFS_READY" = "1" ] || [ -e /dev/usb-ffs/adb/ep1 ]; then
                 CURRENT_UDC=$(cat /config/usb_gadget/g1/UDC 2>/dev/null)
                 if [ "$CURRENT_UDC" != "$CONTROLLER" ]; then
                     echo "$CONTROLLER" > /config/usb_gadget/g1/UDC 2>/dev/null
@@ -109,10 +130,6 @@ update_metrics() {
 
 # Run immediately once
 update_metrics
-
-if [ "$1" = "--once" ]; then
-    exit 0
-fi
 
 # Loop in background every 1 second
 while true; do

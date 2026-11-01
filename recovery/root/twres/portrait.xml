@@ -3848,10 +3848,7 @@
 				<condition var1="tw_has_data_media" var2="1"/>
 				<placement x="%center_x%" y="%row2a_y%"/>
 				<text>{@adb_sideload_btn=ADB Sideload}</text>
-				<actions>
-					<action function="cmd">/system/bin/prepare_sideload.sh</action>
-					<action function="page">sideload</action>
-				</actions>
+				<action function="page">sideload</action>
 			</button>
 
 			<button style="main_button">
@@ -5434,7 +5431,6 @@
 			<slider>
 				<text>{@swipe_to_sideload=Swipe to Start Sideload}</text>
 				<actions>
-					<action function="cmd">/system/bin/prepare_sideload.sh</action>
 					<action function="set">tw_back=advanced</action>
 					<action function="set">tw_action=adbsideload</action>
 					<action function="set">tw_action_text1={@sideload_confirm=ADB Sideload}</action>

@@ -72,8 +72,8 @@ update_metrics() {
     CONTROLLER="30740000.usb"
 
     if [ "$CONF" = "sideload" ] || [ "$CONF" = "adb,sideload" ]; then
-        # Sideload mode: if minadbd is running, ep1 exists, or ffs.ready is 1, ensure UDC is active!
-        if [ "$FFS_READY" = "1" ] || [ -e /dev/usb-ffs/adb/ep1 ] || pgrep -x minadbd >/dev/null 2>&1; then
+        # Sideload mode: once descriptors are loaded (FFS ready or ep1 created), bind UDC!
+        if [ "$FFS_READY" = "1" ] || [ -e /dev/usb-ffs/adb/ep1 ]; then
             if [ ! -L "/config/usb_gadget/g1/configs/b.1/f1" ]; then
                 ln -sf /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f1 2>/dev/null
             fi

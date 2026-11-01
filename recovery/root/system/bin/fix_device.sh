@@ -45,7 +45,8 @@ update_metrics() {
 
     # 3. Sideload Cancel Guardian
     if [ -f "/sideload/exit" ]; then
-        pkill -9 minadbd 2>/dev/null
+        killall -9 minadbd 2>/dev/null
+        pkill -9 -x minadbd 2>/dev/null
         rm -f /sideload/exit 2>/dev/null
     fi
 
@@ -55,8 +56,22 @@ update_metrics() {
     FFS_READY=$(getprop sys.usb.ffs.ready)
     CONTROLLER="30740000.usb"
 
-    if [ "$CONF" = "sideload" ] || [ "$CONF" = "adb,sideload" ] || [ "$CONF" = "none" ]; then
-        # Sideload / transition mode: managed exclusively by prepare_sideload.sh and minadbd
+    if [ "$CONF" = "sideload" ] || [ "$CONF" = "adb,sideload" ]; then
+        # Sideload mode: ensure UDC and state are active once minadbd is ready
+        if [ "$FFS_READY" = "1" ]; then
+            if [ ! -L "/config/usb_gadget/g1/configs/b.1/f1" ]; then
+                ln -sf /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f1 2>/dev/null
+            fi
+            CURRENT_UDC=$(cat /config/usb_gadget/g1/UDC 2>/dev/null)
+            if [ "$CURRENT_UDC" != "$CONTROLLER" ]; then
+                echo "$CONTROLLER" > /config/usb_gadget/g1/UDC 2>/dev/null
+            fi
+            if [ "$STATE" != "$CONF" ]; then
+                setprop sys.usb.state "$CONF"
+            fi
+        fi
+        return 0
+    elif [ "$CONF" = "none" ]; then
         return 0
     else
         # Normal recovery mode

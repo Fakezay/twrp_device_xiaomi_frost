@@ -194,3 +194,6 @@ parallel_restorecon enabled
 
 #coProcessor
 /dev/camille_display0     0666   system     system
+
+# FUSE device for TWRP sideload
+/dev/fuse                 0666   root       system
